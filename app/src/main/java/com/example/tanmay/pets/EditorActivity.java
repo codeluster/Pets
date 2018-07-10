@@ -1,9 +1,13 @@
 package com.example.tanmay.pets;
 
+import android.content.ContentValues;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,11 +16,15 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 
+import com.example.tanmay.pets.data.PetContract;
+import com.example.tanmay.pets.data.PetDbHelper;
+
 public class EditorActivity extends AppCompatActivity {
 
     private EditText mNameEditText, mBreedEditText, mWeightEditText;
     private Spinner mGenderSpinner;
     private int mGender = 0;
+    private PetDbHelper mDbHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,6 +38,8 @@ public class EditorActivity extends AppCompatActivity {
         mGenderSpinner = findViewById(R.id.spinner_gender);
 
         setupSpinner();
+
+        mDbHelper = new PetDbHelper(this);
 
     }
 
@@ -69,6 +79,22 @@ public class EditorActivity extends AppCompatActivity {
         });
     }
 
+    private void insertPet() {
+
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(PetContract.PetEntry.COLUMN_PET_NAME, mNameEditText.getText().toString().trim());
+        contentValues.put(PetContract.PetEntry.COLUMN_PET_BREED, mBreedEditText.getText().toString().trim());
+        contentValues.put(PetContract.PetEntry.COLUMN_PET_WEIGHT, Integer.parseInt(mWeightEditText.getText().toString()));
+        contentValues.put(PetContract.PetEntry.COLUMN_PET_GENDER, mGender);
+
+        long newRowID = database.insert(PetContract.PetEntry.TABLE_NAME, null, contentValues);
+
+        Log.v("Editor : Pet Insert", newRowID + "");
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_editor, menu);
@@ -79,7 +105,8 @@ public class EditorActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                // Save the data
+                insertPet();
+                finish();
                 return true;
             case R.id.action_delete:
                 //delete entry
