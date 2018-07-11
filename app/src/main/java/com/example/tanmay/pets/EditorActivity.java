@@ -2,12 +2,10 @@ package com.example.tanmay.pets;
 
 import android.content.ContentValues;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,6 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.tanmay.pets.data.PetContract;
 import com.example.tanmay.pets.data.PetDbHelper;
@@ -91,8 +90,7 @@ public class EditorActivity extends AppCompatActivity {
 
         long newRowID = database.insert(PetContract.PetEntry.TABLE_NAME, null, contentValues);
 
-        Log.v("Editor : Pet Insert", newRowID + "");
-
+        Toast.makeText(this, contentValues.get(PetContract.PetEntry.COLUMN_PET_NAME) + " added to database.", Toast.LENGTH_SHORT).show();
     }
 
     @Override
