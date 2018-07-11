@@ -88,7 +88,7 @@ public class EditorActivity extends AppCompatActivity {
         contentValues.put(PetContract.PetEntry.COLUMN_PET_WEIGHT, Integer.parseInt(mWeightEditText.getText().toString()));
         contentValues.put(PetContract.PetEntry.COLUMN_PET_GENDER, mGender);
 
-        long newRowID = database.insert(PetContract.PetEntry.TABLE_NAME, null, contentValues);
+        getContentResolver().insert(PetContract.PetEntry.CONTENT_URI, contentValues);
 
         Toast.makeText(this, contentValues.get(PetContract.PetEntry.COLUMN_PET_NAME) + " added to database.", Toast.LENGTH_SHORT).show();
     }

@@ -20,7 +20,6 @@ import com.example.tanmay.pets.data.PetDbHelper;
 public class CatalogActivity extends AppCompatActivity {
 
     FloatingActionButton addPet;
-    PetDbHelper mDbHelper;
 
     @Override
     protected void onStart() {
@@ -42,29 +41,11 @@ public class CatalogActivity extends AppCompatActivity {
             }
         });
 
-
-        mDbHelper = new PetDbHelper(this);
-
     }
 
     private void displayDatabaseInfo() {
 
-        SQLiteDatabase database = mDbHelper.getReadableDatabase();
-
-/*
-        String[] projection = {
-                PetContract.PetEntry.COLUMN_PET_NAME,
-                PetContract.PetEntry.COLUMN_PET_BREED
-
-        };
-
-        String selection = PetContract.PetEntry.COLUMN_PET_GENDER + "=?";
-        String[] selectionArgs = new String[]{String.valueOf(PetContract.PetEntry.GENDER_MALE)};
-
-        Cursor cursor = database.query(PetContract.PetEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, null);
-*/
-
-        Cursor cursor = database.query(PetContract.PetEntry.TABLE_NAME, null, null, null, null, null, null);
+        Cursor cursor = getContentResolver().query(PetContract.PetEntry.CONTENT_URI, null, null, null, null);
 
         TextView displayView = findViewById(R.id.text_view_pet);
 
@@ -107,17 +88,14 @@ public class CatalogActivity extends AppCompatActivity {
     }
 
     private void insertDummyPet() {
-
-        SQLiteDatabase database = mDbHelper.getWritableDatabase();
-
         ContentValues values = new ContentValues();
         values.put(PetContract.PetEntry.COLUMN_PET_NAME, "Toto");
         values.put(PetContract.PetEntry.COLUMN_PET_BREED, "Terrier");
         values.put(PetContract.PetEntry.COLUMN_PET_GENDER, PetContract.PetEntry.GENDER_MALE);
         values.put(PetContract.PetEntry.COLUMN_PET_WEIGHT, 7);
 
-        long newRowID = database.insert(PetContract.PetEntry.TABLE_NAME, null, values);
-        Log.v("Catalogue : DummyPet", newRowID + "");
+        getContentResolver().insert(PetContract.PetEntry.CONTENT_URI, values);
+
     }
 
     @Override
