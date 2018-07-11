@@ -1,6 +1,7 @@
 package com.example.tanmay.pets;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -11,6 +12,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CursorAdapter;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -118,4 +121,23 @@ public class CatalogActivity extends AppCompatActivity {
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private class PetCursorAdapter extends CursorAdapter {
+
+        public PetCursorAdapter(Context context, Cursor c) {
+            super(context, c);
+        }
+
+        @Override
+        public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
+            return null;
+        }
+
+        @Override
+        public void bindView(View view, Context context, Cursor cursor) {
+
+        }
+    }
+
 }
+

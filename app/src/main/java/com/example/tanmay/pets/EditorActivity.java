@@ -81,16 +81,20 @@ public class EditorActivity extends AppCompatActivity {
     private void insertPet() {
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        try {
 
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(PetContract.PetEntry.COLUMN_PET_NAME, mNameEditText.getText().toString().trim());
-        contentValues.put(PetContract.PetEntry.COLUMN_PET_BREED, mBreedEditText.getText().toString().trim());
-        contentValues.put(PetContract.PetEntry.COLUMN_PET_WEIGHT, Integer.parseInt(mWeightEditText.getText().toString()));
-        contentValues.put(PetContract.PetEntry.COLUMN_PET_GENDER, mGender);
+            ContentValues contentValues = new ContentValues();
+            contentValues.put(PetContract.PetEntry.COLUMN_PET_NAME, mNameEditText.getText().toString().trim());
+            contentValues.put(PetContract.PetEntry.COLUMN_PET_BREED, mBreedEditText.getText().toString().trim());
+            contentValues.put(PetContract.PetEntry.COLUMN_PET_WEIGHT, Integer.parseInt(mWeightEditText.getText().toString()));
+            contentValues.put(PetContract.PetEntry.COLUMN_PET_GENDER, mGender);
 
-        getContentResolver().insert(PetContract.PetEntry.CONTENT_URI, contentValues);
-
-        Toast.makeText(this, contentValues.get(PetContract.PetEntry.COLUMN_PET_NAME) + " added to database.", Toast.LENGTH_SHORT).show();
+            getContentResolver().insert(PetContract.PetEntry.CONTENT_URI, contentValues);
+            finish();
+            Toast.makeText(this, contentValues.get(PetContract.PetEntry.COLUMN_PET_NAME) + " added to database.", Toast.LENGTH_SHORT).show();
+        } catch (IllegalArgumentException e) {
+            Toast.makeText(this, "Please enter valid data", Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override
@@ -104,7 +108,6 @@ public class EditorActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_save:
                 insertPet();
-                finish();
                 return true;
             case R.id.action_delete:
                 //delete entry
