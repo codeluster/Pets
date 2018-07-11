@@ -11,6 +11,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".CatalogActivity"
+            android:label="Pets"
             android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,7 +19,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".EditorActivity"></activity>
+        <activity
+            android:name=".EditorActivity"
+            android:label="Add a Pet"
+            android:parentActivityName=".CatalogActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".CatalogActivity" />
+        </activity>
+
+        <provider
+            android:name=".data.PetProvider"
+            android:authorities="com.example.tanmay.pets"
+            android:exported="false" />
     </application>
 
 </manifest>

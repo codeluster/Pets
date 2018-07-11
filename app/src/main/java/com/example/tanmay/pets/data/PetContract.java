@@ -1,5 +1,6 @@
 package com.example.tanmay.pets.data;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 // The pet contract contains schema information various tables in the database
@@ -9,8 +10,15 @@ public final class PetContract {
 
     }
 
+    public static final String CONTENT_AUTHORITY = "com.example.tanmay.pets";
+    public static final Uri BASE_CONTENT_AUTHORITY = Uri.parse("content://" + CONTENT_AUTHORITY);
+    public static final String PATH_PETS = PetEntry.TABLE_NAME;
+
     // Here the schema of one particular table is stored
-    public class PetEntry implements BaseColumns {
+    public static class PetEntry implements BaseColumns {
+
+        public static final Uri CONTENT_URI = Uri.withAppendedPath(BASE_CONTENT_AUTHORITY, PATH_PETS);
+
         public static final String TABLE_NAME = "pets";
 
         public static final String _ID = BaseColumns._ID;
