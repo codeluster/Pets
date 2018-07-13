@@ -8,13 +8,16 @@ import android.database.sqlite.SQLiteDatabase;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.tanmay.pets.data.PetContract;
@@ -48,47 +51,24 @@ public class CatalogActivity extends AppCompatActivity {
 
     private void displayDatabaseInfo() {
 
-        Cursor cursor = getContentResolver().query(PetContract.PetEntry.CONTENT_URI, null, null, null, null);
+        String[] projection = {
+                PetContract.PetEntry._ID,
+                PetContract.PetEntry.COLUMN_PET_NAME,
+                PetContract.PetEntry.COLUMN_PET_BREED
+        };
 
-        TextView displayView = findViewById(R.id.text_view_pet);
-
-        try {
-            displayView.setText("No of pets in the table: " + cursor.getCount() + "\n");
-
-            displayView.append(PetContract.PetEntry._ID + " - " +
-                    PetContract.PetEntry.COLUMN_PET_NAME + " - " +
-                    PetContract.PetEntry.COLUMN_PET_BREED + " - " +
-                    PetContract.PetEntry.COLUMN_PET_GENDER + " - " +
-                    PetContract.PetEntry.COLUMN_PET_WEIGHT + "\n");
-
-            int idColumnIndex = cursor.getColumnIndex(PetContract.PetEntry._ID);
-            int nameColumnIndex = cursor.getColumnIndex(PetContract.PetEntry.COLUMN_PET_NAME);
-            int breedColumnIndex = cursor.getColumnIndex(PetContract.PetEntry.COLUMN_PET_BREED);
-            int genderColumnIndex = cursor.getColumnIndex(PetContract.PetEntry.COLUMN_PET_GENDER);
-            int weightColumnIndex = cursor.getColumnIndex(PetContract.PetEntry.COLUMN_PET_WEIGHT);
-
-            while (cursor.moveToNext()) {
-                int currentID = cursor.getInt(idColumnIndex);
-                String currentName = cursor.getString(nameColumnIndex);
-                String currentBreed = cursor.getString(breedColumnIndex);
-                int currentGender = cursor.getInt(genderColumnIndex);
-                int currentWeight = cursor.getInt(weightColumnIndex);
-
-                displayView.append(currentID + " - " +
-                        currentName + " - " +
-                        currentBreed + " - " +
-                        currentGender + " - " +
-                        currentWeight + "\n");
-
-            }
-
-
-        } finally {
-            // Always close the cursor when you're done reading from it. This releases all its
-            // resources and makes it invalid.
-            cursor.close();
+        Cursor cursor = getContentResolver().query(PetContract.PetEntry.CONTENT_URI, projection, null, null, null);
+        ListView pet_list = findViewById(R.id.catalog_list_view);
+        if (cursor.moveToFirst()) {
+            PetCursorAdapter adapter = new PetCursorAdapter(this, cursor);
+            pet_list.setAdapter(adapter);
+        } else {
+            View emptyView = findViewById(R.id.empty_view);
+            pet_list.setEmptyView(emptyView);
         }
+
     }
+
 
     private void insertDummyPet() {
         ContentValues values = new ContentValues();
@@ -130,14 +110,23 @@ public class CatalogActivity extends AppCompatActivity {
 
         @Override
         public View newView(Context context, Cursor cursor, ViewGroup viewGroup) {
-            return null;
+            return LayoutInflater.from(context).inflate(R.layout.item_catalog, viewGroup, false);
         }
 
         @Override
         public void bindView(View view, Context context, Cursor cursor) {
+            TextView nameTextView = findViewById(R.id.pet_name);
+            TextView summaryTextView = findViewById(R.id.pet_summary);
+
+            int nameColumnIndex = cursor.getColumnIndexOrThrow(PetContract.PetEntry.COLUMN_PET_NAME);
+            int breedColumnIndex = cursor.getColumnIndexOrThrow(PetContract.PetEntry.COLUMN_PET_BREED);
+
+            String petName = cursor.getString(nameColumnIndex);
+            String petBreed = cursor.getString(breedColumnIndex);
+
+            nameTextView.setText(petName);
+            summaryTextView.setText(petBreed);
 
         }
     }
-
 }
-
