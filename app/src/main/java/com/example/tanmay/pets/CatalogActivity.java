@@ -66,7 +66,7 @@ public class CatalogActivity extends AppCompatActivity {
             View emptyView = findViewById(R.id.empty_view);
             pet_list.setEmptyView(emptyView);
         }
-
+        cursor.close();
     }
 
 
