@@ -1,7 +1,6 @@
 package com.example.tanmay.pets.data;
 
 import android.content.ContentProvider;
-import android.content.ContentProviderClient;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
@@ -25,7 +24,6 @@ public class PetProvider extends ContentProvider {
         sUriMatcher.addURI(PetContract.CONTENT_AUTHORITY, PetContract.PATH_PETS, PETS);
         sUriMatcher.addURI(PetContract.CONTENT_AUTHORITY, PetContract.PATH_PETS + "/#", PETS_ID);
     }
-
 
     private PetDbHelper mDbHelper;
 
@@ -58,6 +56,8 @@ public class PetProvider extends ContentProvider {
                 throw new IllegalArgumentException("The provided Uri " + uri.toString() + " is not valid");
         }
 
+        cursor.setNotificationUri(getContext().getContentResolver(), uri);
+
         return cursor;
     }
 
@@ -79,24 +79,26 @@ public class PetProvider extends ContentProvider {
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         switch (sUriMatcher.match(uri)) {
             case PETS:
-                return insertItem(uri, values);
+                if (validateData(values)) {
+                    return insertPet(uri, values);
+                }
             default:
                 throw new IllegalArgumentException("The provided Uri " + uri.toString() + " is not valid");
         }
     }
 
-    private Uri insertItem(Uri uri, ContentValues contentValues) {
+    private Uri insertPet(Uri uri, ContentValues contentValues) {
 
-        if (validateData(contentValues)) {
+        SQLiteDatabase database = mDbHelper.getWritableDatabase();
+        long rowID = database.insert(PetContract.PetEntry.TABLE_NAME, null, contentValues);
+        if (rowID == -1) {
+            Log.e(LOG_TAG, "Failed to insert row for " + uri);
+            return null;
+        }
 
-            SQLiteDatabase database = mDbHelper.getWritableDatabase();
-            long rowID = database.insert(PetContract.PetEntry.TABLE_NAME, null, contentValues);
-            if (rowID == -1) {
-                Log.e(LOG_TAG, "Failed to insert row for " + uri);
-                return null;
-            }
-            return ContentUris.withAppendedId(uri, rowID);
-        } else return null;
+        getContext().getContentResolver().notifyChange(uri, null);
+
+        return ContentUris.withAppendedId(uri, rowID);
     }
 
     private boolean validateData(ContentValues values) {

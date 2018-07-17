@@ -69,7 +69,6 @@ public class CatalogActivity extends AppCompatActivity {
         cursor.close();
     }
 
-
     private void insertDummyPet() {
         ContentValues values = new ContentValues();
         values.put(PetContract.PetEntry.COLUMN_PET_NAME, "Toto");
