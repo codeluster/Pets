@@ -29,7 +29,6 @@ public class CatalogActivity extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        displayDatabaseInfo();
         super.onStart();
     }
 
@@ -47,10 +46,6 @@ public class CatalogActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    private void displayDatabaseInfo() {
-
         String[] projection = {
                 PetContract.PetEntry._ID,
                 PetContract.PetEntry.COLUMN_PET_NAME,
@@ -60,7 +55,7 @@ public class CatalogActivity extends AppCompatActivity {
         Cursor cursor = getContentResolver().query(PetContract.PetEntry.CONTENT_URI, projection, null, null, null);
         ListView pet_list = findViewById(R.id.catalog_list_view);
         if (cursor.moveToFirst()) {
-            PetCursorAdapter adapter = new PetCursorAdapter(this, cursor);
+            PetCursorAdapter adapter = new PetCursorAdapter(this, null);
             pet_list.setAdapter(adapter);
         } else {
             View emptyView = findViewById(R.id.empty_view);
@@ -92,7 +87,6 @@ public class CatalogActivity extends AppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_insert_dummy_data:
                 insertDummyPet();
-                displayDatabaseInfo();
                 return true;
             case R.id.action_delete_all_entries:
                 //delete all entries

@@ -29,17 +29,14 @@ public class PetProvider extends ContentProvider {
 
     @Override
     public boolean onCreate() {
-
         mDbHelper = new PetDbHelper(getContext());
-
-        SQLiteDatabase db = mDbHelper.getWritableDatabase();
         return true;
     }
 
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        mDbHelper = new PetDbHelper(getContext());
+        // Get readable database
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
         Cursor cursor;
 
@@ -55,9 +52,7 @@ public class PetProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("The provided Uri " + uri.toString() + " is not valid");
         }
-
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
-
         return cursor;
     }
 
@@ -126,11 +121,15 @@ public class PetProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
 
             case PETS:
-                return deleteItem(selection, selectionArgs);
+                int y = deleteItem(selection, selectionArgs);
+                if (y != 0) getContext().getContentResolver().notifyChange(uri, null);
+                return y;
             case PETS_ID:
                 selection = PetContract.PetEntry._ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                return deleteItem(selection, selectionArgs);
+                int x = deleteItem(selection, selectionArgs);
+                if (x != 0) getContext().getContentResolver().notifyChange(uri, null);
+                return x;
             default:
                 throw new IllegalArgumentException("Deletion not supported for " + uri);
         }
@@ -146,17 +145,21 @@ public class PetProvider extends ContentProvider {
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
 
-        if (values.size() == 0) return 0;
+        if (values.size() == 0) return -1;
 
         if (validateData(values)) {
 
             switch (sUriMatcher.match(uri)) {
                 case PETS:
-                    return updateItem(values, selection, selectionArgs);
+                    int x = updateItem(values, selection, selectionArgs);
+                    if (x != 0) getContext().getContentResolver().notifyChange(uri, null);
+                    return x;
                 case PETS_ID:
                     selection = PetContract.PetEntry._ID + "=?";
                     selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
-                    return updateItem(values, selection, selectionArgs);
+                    int ri = updateItem(values, selection, selectionArgs);
+                    if (ri != 0) getContext().getContentResolver().notifyChange(uri, null);
+                    return ri;
                 default:
                     throw new IllegalArgumentException("Update is not supported for " + uri);
             }
@@ -167,10 +170,7 @@ public class PetProvider extends ContentProvider {
     private int updateItem(ContentValues values, String selection, String[] selectionArgs) {
 
         SQLiteDatabase database = mDbHelper.getWritableDatabase();
-
-        database.update(PetContract.PetEntry.TABLE_NAME, values, selection, selectionArgs);
-
-        return 0;
+        return database.update(PetContract.PetEntry.TABLE_NAME, values, selection, selectionArgs);
     }
 
 }
