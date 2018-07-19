@@ -1,6 +1,6 @@
-package com.example.tanmay.pets.data;
+package com.example.tanmay.pets.Data;
 
-import com.example.tanmay.pets.data.PetContract.PetEntry;
+import com.example.tanmay.pets.Data.PetContract.PetEntry;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".CatalogActivity"
+            android:name=".Activites.CatalogActivity"
             android:label="Pets"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -20,16 +20,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".EditorActivity"
+            android:name=".Activites.EditorActivity"
             android:label="Add a Pet"
-            android:parentActivityName=".CatalogActivity">
+            android:parentActivityName=".Activites.CatalogActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".CatalogActivity" />
+                android:value=".Activites.CatalogActivity" />
         </activity>
 
         <provider
-            android:name=".data.PetProvider"
+            android:name=".Data.PetProvider"
             android:authorities="com.example.tanmay.pets"
             android:exported="false" />
     </application>

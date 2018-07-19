@@ -1,4 +1,4 @@
-package com.example.tanmay.pets.data;
+package com.example.tanmay.pets.Data;
 
 import android.content.ContentResolver;
 import android.net.Uri;
