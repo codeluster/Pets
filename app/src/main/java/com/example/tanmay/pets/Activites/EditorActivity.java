@@ -1,7 +1,11 @@
 package com.example.tanmay.pets.Activites;
 
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
@@ -17,15 +21,15 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.tanmay.pets.Data.PetContract;
-import com.example.tanmay.pets.Data.PetDbHelper;
 import com.example.tanmay.pets.R;
 
-public class EditorActivity extends AppCompatActivity {
+public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    private static final int EXISTING_PET_LOADER = 0;
     private EditText mNameEditText, mBreedEditText, mWeightEditText;
     private Spinner mGenderSpinner;
     private int mGender = 0;
-    private PetDbHelper mDbHelper;
+    private Uri currentPetUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,7 +39,7 @@ public class EditorActivity extends AppCompatActivity {
         // Get the intent
         Intent intent = getIntent();
         // Get the uri of clicked pet
-        Uri currentPetUri = intent.getData();
+        currentPetUri = intent.getData();
 
         // If currentPetUri == null then open in add new pet mode
         if (currentPetUri == null) {
@@ -53,8 +57,54 @@ public class EditorActivity extends AppCompatActivity {
 
         setupSpinner();
 
-        mDbHelper = new PetDbHelper(this);
+        getLoaderManager().initLoader(EXISTING_PET_LOADER, null, this);
 
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        String[] projection = {
+                PetContract.PetEntry._ID,
+                PetContract.PetEntry.COLUMN_PET_NAME,
+                PetContract.PetEntry.COLUMN_PET_BREED,
+                PetContract.PetEntry.COLUMN_PET_WEIGHT,
+                PetContract.PetEntry.COLUMN_PET_GENDER
+        };
+
+        // returns new cursor loader containing only one row acc to the currentPetUri
+        return new CursorLoader(this,
+                currentPetUri,
+                projection,
+                null,
+                null,
+                null);
+
+    }
+
+    // Cursor data will have only one row
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+
+        // Prevent execution if new pet is to be added
+        if (data == null || data.getCount() < 1) return;
+
+        // Initially cursor is at -1
+        if (data.moveToFirst()) {
+            mNameEditText.setText(data.getString(data.getColumnIndex(PetContract.PetEntry.COLUMN_PET_NAME)));
+            mBreedEditText.setText(data.getString(data.getColumnIndex(PetContract.PetEntry.COLUMN_PET_BREED)));
+            mWeightEditText.setText(Integer.toString(data.getInt(data.getColumnIndex(PetContract.PetEntry.COLUMN_PET_WEIGHT))));
+            mGenderSpinner.setSelection(data.getInt(data.getColumnIndex(PetContract.PetEntry.COLUMN_PET_GENDER)));
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // Set all edit texts as blank
+        mNameEditText.setText("");
+        mBreedEditText.setText("");
+        mWeightEditText.setText("");
+        // Set Unknown Gender
+        mGenderSpinner.setSelection(0);
     }
 
     private void setupSpinner() {
