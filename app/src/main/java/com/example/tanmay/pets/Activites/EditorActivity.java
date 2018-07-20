@@ -223,6 +223,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 // If pet hasn't changed then navigate up
                 if (!mPetHasChanged) {
                     NavUtils.navigateUpFromSameTask(this);
+                    return true;
                 }
 
                 DialogInterface.OnClickListener discardButtonClickListener =
