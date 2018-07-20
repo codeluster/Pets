@@ -63,4 +63,10 @@
 
     <!-- Label for dropdown menu option if the pet is female [CHAR LIMIT=20] -->
     <string name="gender_female">Female</string>
+
+    <!--Editor Activity title if new pet is to be added-->
+    <string name="add_a_pet">"Add a Pet</string>
+
+    <!--Editor Activity title if existing pet is to be edited-->
+    <string name="edit_pet">"Edit Pet</string>
 </resources>

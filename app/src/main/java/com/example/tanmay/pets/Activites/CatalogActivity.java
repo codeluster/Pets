@@ -1,8 +1,12 @@
 package com.example.tanmay.pets.Activites;
 
+import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -18,7 +22,12 @@ import com.example.tanmay.pets.Adapters.PetCursorAdapter;
 import com.example.tanmay.pets.Data.PetContract;
 import com.example.tanmay.pets.R;
 
-public class CatalogActivity extends AppCompatActivity {
+public class CatalogActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+
+    // Identifier for pet data loader
+    private static final int PET_LOADER = 0;
+
+    // Adapter for the list view
 
     PetCursorAdapter mCursorAdapter;
 
@@ -41,21 +50,16 @@ public class CatalogActivity extends AppCompatActivity {
             }
         });
 
-//        String[] projection = {
-//                PetContract.PetEntry._ID,
-//                PetContract.PetEntry.COLUMN_PET_NAME,
-//                PetContract.PetEntry.COLUMN_PET_BREED
-//        };
-//
-//        Cursor cursor = getContentResolver().query(PetContract.PetEntry.CONTENT_URI, projection, null, null, null);
-
         // List View to be populated with pet data
         ListView petListView = findViewById(R.id.catalog_list_view);
 
+        // Set a view to be displayed when the list is empty
         View emptyView = findViewById(R.id.empty_view);
         petListView.setEmptyView(emptyView);
 
+        // Instantiate the cursor adapter
         mCursorAdapter = new PetCursorAdapter(this, null);
+        //Set cursor adapter on the list view
         petListView.setAdapter(mCursorAdapter);
 
         petListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -72,15 +76,8 @@ public class CatalogActivity extends AppCompatActivity {
             }
         });
 
+        getLoaderManager().initLoader(PET_LOADER, null, this);
 
-//        if (cursor.moveToFirst()) {
-//            PetCursorAdapter adapter = new PetCursorAdapter(this, null);
-//            petListView.setAdapter(adapter);
-//        } else {
-//            View emptyView = findViewById(R.id.empty_view);
-//            petListView.setEmptyView(emptyView);
-//        }
-//        cursor.close();
     }
 
     private void insertDummyPet() {
@@ -120,4 +117,36 @@ public class CatalogActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        // Define a projection to specify the rows we need
+        String[] projection = {
+                PetContract.PetEntry._ID,
+                PetContract.PetEntry.COLUMN_PET_NAME,
+                PetContract.PetEntry.COLUMN_PET_BREED
+        };
+
+        // This loader will execute the Content Provider's query method on a background thread
+        return new CursorLoader(this,
+                PetContract.PetEntry.CONTENT_URI,
+                projection,
+                null,
+                null,
+                null);
+
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        // Update the cursor adapter with new data
+        mCursorAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        // Callback when the data needs to be deleted
+        mCursorAdapter.swapCursor(null);
+
+    }
 }

@@ -1,7 +1,8 @@
 package com.example.tanmay.pets.Activites;
 
 import android.content.ContentValues;
-import android.database.sqlite.SQLiteDatabase;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
@@ -30,6 +31,19 @@ public class EditorActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
+
+        // Get the intent
+        Intent intent = getIntent();
+        // Get the uri of clicked pet
+        Uri currentPetUri = intent.getData();
+
+        // If currentPetUri == null then open in add new pet mode
+        if (currentPetUri == null) {
+            setTitle(R.string.add_a_pet);
+        } else {
+            // An existing pet has been clicked on and needs to be added
+            setTitle(R.string.edit_pet);
+        }
 
         // Find all relevant views that we will need to read user input from
         mNameEditText = findViewById(R.id.edit_pet_name);
@@ -81,7 +95,6 @@ public class EditorActivity extends AppCompatActivity {
 
     private void insertPet() {
 
-        SQLiteDatabase database = mDbHelper.getWritableDatabase();
         try {
 
             ContentValues contentValues = new ContentValues();
@@ -91,8 +104,11 @@ public class EditorActivity extends AppCompatActivity {
             contentValues.put(PetContract.PetEntry.COLUMN_PET_GENDER, mGender);
 
             getContentResolver().insert(PetContract.PetEntry.CONTENT_URI, contentValues);
+
             finish();
+
             Toast.makeText(this, contentValues.get(PetContract.PetEntry.COLUMN_PET_NAME) + " added to database.", Toast.LENGTH_SHORT).show();
+
         } catch (IllegalArgumentException e) {
             Toast.makeText(this, "Please enter valid data", Toast.LENGTH_SHORT).show();
         }
