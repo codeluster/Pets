@@ -69,4 +69,10 @@
 
     <!--Editor Activity title if existing pet is to be edited-->
     <string name="edit_pet">"Edit Pet</string>
+
+    <!-- Toast to display when pet update failed in Editor Activity-->
+    <string name="editor_update_pet_failed">"Failed to update pet</string>
+
+    <!-- Toast to display when pet update successful in Editor Activity-->
+    <string name="editor_update_pet_successful">"Successfully updated pet</string>
 </resources>
