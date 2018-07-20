@@ -76,4 +76,12 @@
     <!-- Dialog button for the option to keep editing the current pet -->
     <string name="keep_editing">Keep Editing</string>
 
+    <!-- Dialog message when deleting pet -->
+    <string name="delete_pet_confirmation_dialog_message">Delete this pet?</string>
+
+    <!-- Dialog button to confirm deletion -->
+    <string name="delete">Delete</string>
+
+    <!-- Dialog button to cancel deletion -->
+    <string name="cancel">Cancel</string>
 </resources>

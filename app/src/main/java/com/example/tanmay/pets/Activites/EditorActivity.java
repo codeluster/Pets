@@ -188,6 +188,28 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         builder.create().show();
     }
 
+    private void showDeleteConfirmationDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_pet_confirmation_dialog_message);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                getContentResolver().delete(currentPetUri, null, null);
+                finish();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (dialog != null) dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
+
+    }
+
     @Override
     public void onBackPressed() {
         if (!mPetHasChanged) {
@@ -233,8 +255,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 savePet();
                 return true;
             case R.id.action_delete:
-                getContentResolver().delete(currentPetUri, null, null);
-                finish();
+                showDeleteConfirmationDialog();
                 return true;
             case android.R.id.home:
 
