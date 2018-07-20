@@ -150,22 +150,25 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        String[] projection = {
-                PetContract.PetEntry._ID,
-                PetContract.PetEntry.COLUMN_PET_NAME,
-                PetContract.PetEntry.COLUMN_PET_BREED,
-                PetContract.PetEntry.COLUMN_PET_WEIGHT,
-                PetContract.PetEntry.COLUMN_PET_GENDER
-        };
 
-        // returns new cursor loader containing only one row acc to the currentPetUri
-        return new CursorLoader(this,
-                currentPetUri,
-                projection,
-                null,
-                null,
-                null);
+        if (currentPetUri != null) {
 
+            String[] projection = {
+                    PetContract.PetEntry._ID,
+                    PetContract.PetEntry.COLUMN_PET_NAME,
+                    PetContract.PetEntry.COLUMN_PET_BREED,
+                    PetContract.PetEntry.COLUMN_PET_WEIGHT,
+                    PetContract.PetEntry.COLUMN_PET_GENDER
+            };
+
+            // returns new cursor loader containing only one row acc to the currentPetUri
+            return new CursorLoader(this,
+                    currentPetUri,
+                    projection,
+                    null,
+                    null,
+                    null);
+        } else return null;
     }
 
     // Cursor data will have only one row
