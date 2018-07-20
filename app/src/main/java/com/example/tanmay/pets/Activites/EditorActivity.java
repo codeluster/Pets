@@ -207,6 +207,7 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     }
 
+    // Gets executed when new pet is being added
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
