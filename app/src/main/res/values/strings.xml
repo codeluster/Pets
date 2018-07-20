@@ -64,15 +64,25 @@
     <!-- Label for dropdown menu option if the pet is female [CHAR LIMIT=20] -->
     <string name="gender_female">Female</string>
 
-    <!--Editor Activity title if new pet is to be added-->
-    <string name="add_a_pet">"Add a Pet</string>
+    <!-- Editor Activity title if new pet is to be added-->
+    <string name="add_a_pet">Add a Pet</string>
 
-    <!--Editor Activity title if existing pet is to be edited-->
-    <string name="edit_pet">"Edit Pet</string>
+    <!-- Editor Activity title if existing pet is to be edited-->
+    <string name="edit_pet">Edit Pet</string>
 
     <!-- Toast to display when pet update failed in Editor Activity-->
-    <string name="editor_update_pet_failed">"Failed to update pet</string>
+    <string name="editor_update_pet_failed">Failed to update pet</string>
 
     <!-- Toast to display when pet update successful in Editor Activity-->
-    <string name="editor_update_pet_successful">"Successfully updated pet</string>
+    <string name="editor_update_pet_successful">Successfully updated pet</string>
+
+    <!-- Dialog message when user is leaving editor but hasn't saved changes -->
+    <string name="unsaved_changes_dialog_message">Discard your changes and quit editing?</string>
+
+    <!-- Dialog button text for the option to discard a user's changes -->
+    <string name="discard">Discard</string>
+
+    <!-- Dialog button for the option to keep editing the current pet -->
+    <string name="keep_editing">Keep Editing</string>
+
 </resources>

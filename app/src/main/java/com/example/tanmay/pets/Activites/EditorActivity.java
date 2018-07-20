@@ -1,8 +1,10 @@
 package com.example.tanmay.pets.Activites;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -14,6 +16,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,9 +30,13 @@ import com.example.tanmay.pets.R;
 public class EditorActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final int EXISTING_PET_LOADER = 0;
+
     private EditText mNameEditText, mBreedEditText, mWeightEditText;
     private Spinner mGenderSpinner;
+
     private int mGender = 0;
+    private boolean mPetHasChanged = false;
+
     private Uri currentPetUri;
 
     @Override
@@ -56,7 +63,21 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         mWeightEditText = findViewById(R.id.edit_pet_weight);
         mGenderSpinner = findViewById(R.id.spinner_gender);
 
+        // If user touches any field means they have edited it, set mPetHasChanged to true
+        View.OnTouchListener petEditListener = new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mPetHasChanged = true;
+                return false;
+            }
+        };
+
         setupSpinner();
+
+        mNameEditText.setOnTouchListener(petEditListener);
+        mBreedEditText.setOnTouchListener(petEditListener);
+        mWeightEditText.setOnTouchListener(petEditListener);
+        mGenderSpinner.setOnTouchListener(petEditListener);
 
         getLoaderManager().initLoader(EXISTING_PET_LOADER, null, this);
 
@@ -149,6 +170,39 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         });
     }
 
+    private void showUnsavedChangesDialog(DialogInterface.OnClickListener discardButtonClickListener) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.unsaved_changes_dialog_message);
+        builder.setPositiveButton(R.string.discard, discardButtonClickListener);
+        builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                if (dialog != null) dialog.dismiss();
+            }
+        });
+
+        builder.create().show();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!mPetHasChanged) {
+            super.onBackPressed();
+            return;
+        }
+
+        DialogInterface.OnClickListener discardButtonClickListener =
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        finish();
+                    }
+                };
+
+        showUnsavedChangesDialog(discardButtonClickListener);
+
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_editor, menu);
@@ -165,7 +219,23 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 //delete entry
                 return true;
             case android.R.id.home:
-                NavUtils.navigateUpFromSameTask(this);
+
+                // If pet hasn't changed then navigate up
+                if (!mPetHasChanged) {
+                    NavUtils.navigateUpFromSameTask(this);
+                }
+
+                DialogInterface.OnClickListener discardButtonClickListener =
+                        new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                // User has clicked up therefore navigate up
+                                NavUtils.navigateUpFromSameTask(EditorActivity.this);
+                            }
+                        };
+
+                showUnsavedChangesDialog(discardButtonClickListener);
+
                 return true;
         }
         return super.onOptionsItemSelected(item);
