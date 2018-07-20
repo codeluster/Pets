@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -61,14 +62,36 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
 
     }
 
+    private boolean validateInput() {
+
+        // Check if name is empty
+        if (TextUtils.isEmpty(mNameEditText.getText().toString())) return false;
+        // Check if breed is empty
+        if (TextUtils.isEmpty(mBreedEditText.getText().toString())) return false;
+        // Check if gender is unknown
+        if (mGenderSpinner.getSelectedItemPosition() == PetContract.PetEntry.GENDER_UNKNOWN)
+            return false;
+        // Checks if weight is blank and if so puts it 0
+        if (TextUtils.isEmpty(mWeightEditText.getText().toString()))
+            mWeightEditText.setText(Integer.toString(0));
+
+        // If al criteria are met
+        return true;
+    }
+
     private void savePet() {
+
+        if (!validateInput()) {
+            Log.i("info", "Failed validateInput check");
+            return;
+        }
 
         try {
 
             ContentValues contentValues = new ContentValues();
             contentValues.put(PetContract.PetEntry.COLUMN_PET_NAME, mNameEditText.getText().toString().trim());
             contentValues.put(PetContract.PetEntry.COLUMN_PET_BREED, mBreedEditText.getText().toString().trim());
-            contentValues.put(PetContract.PetEntry.COLUMN_PET_WEIGHT, Integer.parseInt(mWeightEditText.getText().toString()));
+            contentValues.put(PetContract.PetEntry.COLUMN_PET_WEIGHT, Integer.parseInt(mWeightEditText.getText().toString().trim()));
             contentValues.put(PetContract.PetEntry.COLUMN_PET_GENDER, mGender);
 
             if (currentPetUri == null) {

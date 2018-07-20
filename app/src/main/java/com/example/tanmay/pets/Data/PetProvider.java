@@ -99,13 +99,15 @@ public class PetProvider extends ContentProvider {
     private boolean validateData(ContentValues values) {
 
         String name = values.getAsString(PetContract.PetEntry.COLUMN_PET_NAME);
-        if (name == null) throw new IllegalArgumentException("Pet requires a name");
+        if (name == null || name.equals(""))
+            throw new IllegalArgumentException("Pet requires a name");
 
         String breed = values.getAsString(PetContract.PetEntry.COLUMN_PET_BREED);
-        if (breed == null) throw new IllegalArgumentException("Pet's breed needs to be specified");
+        if (breed == null || breed.equals(""))
+            throw new IllegalArgumentException("Pet's breed needs to be specified");
 
         int weight = values.getAsInteger(PetContract.PetEntry.COLUMN_PET_WEIGHT);
-        if (!(weight > 0))
+        if (!(weight >= 0))
             throw new IllegalArgumentException("Pet's weight cannot be less than 1 kg");
 
         int gender = values.getAsInteger(PetContract.PetEntry.COLUMN_PET_GENDER);
