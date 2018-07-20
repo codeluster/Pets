@@ -52,6 +52,10 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
         // If currentPetUri == null then open in add new pet mode
         if (currentPetUri == null) {
             setTitle(R.string.add_a_pet);
+
+            // before creating menu executes onPrepareOptionsMenu()
+            invalidateOptionsMenu();
+
         } else {
             // An existing pet has been clicked on and needs to be added
             setTitle(R.string.edit_pet);
@@ -204,6 +208,18 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        if (currentPetUri == null) {
+            // Remove the option to delete pet when adding a new pet
+            MenuItem menuItem = menu.findItem(R.id.action_delete);
+            menuItem.setVisible(false);
+        }
+        return true;
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_editor, menu);
         return true;
@@ -216,7 +232,8 @@ public class EditorActivity extends AppCompatActivity implements LoaderManager.L
                 savePet();
                 return true;
             case R.id.action_delete:
-                //delete entry
+                getContentResolver().delete(currentPetUri, null, null);
+                finish();
                 return true;
             case android.R.id.home:
 
