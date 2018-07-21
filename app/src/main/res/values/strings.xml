@@ -79,6 +79,9 @@
     <!-- Dialog message when deleting pet -->
     <string name="delete_pet_confirmation_dialog_message">Delete this pet?</string>
 
+    <!-- Dialog message when deleting all pets -->
+    <string name="delete_all_pets_confirmation_dialog_message">Delete all pets?</string>
+
     <!-- Dialog button to confirm deletion -->
     <string name="delete">Delete</string>
 

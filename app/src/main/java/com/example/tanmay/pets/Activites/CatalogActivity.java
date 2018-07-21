@@ -1,9 +1,10 @@
 package com.example.tanmay.pets.Activites;
 
+import android.app.AlertDialog;
 import android.app.LoaderManager;
 import android.content.ContentUris;
-import android.content.ContentValues;
 import android.content.CursorLoader;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
@@ -28,13 +29,10 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     private static final int PET_LOADER = 0;
 
     // Adapter for the list view
-
     PetCursorAdapter mCursorAdapter;
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-    }
+    // Number of items in the cursor
+    private static int numPets = Integer.MAX_VALUE;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,9 +76,27 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
 
         getLoaderManager().initLoader(PET_LOADER, null, this);
 
+        if (numPets == 0) {
+            // if there are no pets in the database
+            invalidateOptionsMenu();
+        }
+
     }
 
-    private void insertDummyPet() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (numPets == 0) {
+            // if there are no pets in the database
+            invalidateOptionsMenu();
+        }
+    }
+
+    // Inserts a dummy pet "Toto" into the database
+    // For debugging & development purpose only
+
+ /*   private void insertDummyPet() {
 
         ContentValues values = new ContentValues();
         values.put(PetContract.PetEntry.COLUMN_PET_NAME, "Toto");
@@ -89,12 +105,46 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
         values.put(PetContract.PetEntry.COLUMN_PET_WEIGHT, 7);
 
         getContentResolver().insert(PetContract.PetEntry.CONTENT_URI, values);
+    }*/
+
+    private void showDeleteAllPetsConfirmationDialog() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(R.string.delete_all_pets_confirmation_dialog_message);
+        builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                deleteAllPets();
+            }
+        });
+        builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                if (dialogInterface != null) dialogInterface.dismiss();
+            }
+        });
+
+        builder.create().show();
 
     }
 
     private void deleteAllPets() {
         int rowsDeleted = getContentResolver().delete(PetContract.PetEntry.CONTENT_URI, null, null);
         Log.v("Catalog Activity: ", rowsDeleted + " rows deleted from pet database");
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        super.onPrepareOptionsMenu(menu);
+
+        if (numPets == 0) {
+            // If there are no pets in the database then the option to
+            // delete all pets makes no sense
+            MenuItem deleteAllPets = menu.findItem(R.id.action_delete_all_entries);
+            deleteAllPets.setVisible(false);
+        }
+
+        return true;
     }
 
     @Override
@@ -107,11 +157,11 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-            case R.id.action_insert_dummy_data:
+           /* case R.id.action_insert_dummy_data:
                 insertDummyPet();
-                return true;
+                return true;*/
             case R.id.action_delete_all_entries:
-                deleteAllPets();
+                showDeleteAllPetsConfirmationDialog();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -141,6 +191,9 @@ public class CatalogActivity extends AppCompatActivity implements LoaderManager.
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         // Update the cursor adapter with new data
         mCursorAdapter.swapCursor(data);
+
+        // set number of pets
+        numPets = data.getCount();
     }
 
     @Override
